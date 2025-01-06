@@ -86,7 +86,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Sebastian - [@Code\_\_Head](https://twitter.com/Code__Head)
+Kennedy Antonio : (https://www.linkedin.com/in/kennedy-antonio-654a7933b/)
 
 ---
 
