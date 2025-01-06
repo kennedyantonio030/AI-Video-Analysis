@@ -33,8 +33,6 @@ app.post("/upload", upload.single("video"), (req, res) => {
   const key = crypto.randomBytes(16).toString("hex");
   res.send(key);
 
-  // Start a worker thread and send the path to the video and the key to the worker
-  console.log("Uploading video", req.file.path);
   createJob(req.file.path, key);
 });
 
@@ -51,7 +49,6 @@ app.get("/video/:key", (req, res) => {
     res.send(data);
   }
 });
-
 // For answering questions
 app.post("/completions/:key", async (req, res) => {
   const { question } = req.body;
