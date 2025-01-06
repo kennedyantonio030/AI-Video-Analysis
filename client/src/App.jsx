@@ -16,8 +16,6 @@ function App() {
     let intervalId;
     if (isProcessing) {
       intervalId = setInterval(() => {
-        console.log("Polling for completion...", isProcessing);
-
         fetch(`/video/${isProcessing}`)
           .then((response) => {
             if (response.ok) {
@@ -142,19 +140,16 @@ function Form({ hidden, videoKey }) {
       });
 
       if (response.ok) {
-        // Handle successful response
         const answer = await response.text();
         console.log("Answer:", answer);
         setAnswer(answer);
       } else {
-        // Handle error response
         console.error(await response.text());
       }
     } catch (error) {
       console.error("Error during fetch:", error);
     }
 
-    // reset button
     setLoading(false);
   };
 
