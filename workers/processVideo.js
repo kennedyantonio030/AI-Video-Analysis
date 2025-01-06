@@ -129,7 +129,6 @@ async function performOCR(videoPath) {
   // Terminate SSIM workers
   workers.forEach((worker) => worker.terminate());
 
-  // Perform OCR and cleanup
   const cpuCount = cpus;
   const chunkSize = Math.ceil(stableFramesPaths.length / cpuCount);
   const ocrPromises = [];
@@ -191,7 +190,6 @@ async function performOCR(videoPath) {
 
   ocrWorkers.forEach((worker) => worker.terminate());
 
-  // Cleanup the results with GPT-4
   const cleanSegments = await openai.chat.completions.create({
     messages: [
       {
@@ -252,8 +250,6 @@ function getPaths(indices, framesDir) {
     const filename = `frame-${frameNumber}.jpg`;
     const filePath = path.join(framesDir, filename);
 
-    // Here we simply return the filePath, but you can modify this part to actually read the file
-    // For example, using fs.readFileSync(filePath) to load the image data
     return {
       index,
       filePath,
