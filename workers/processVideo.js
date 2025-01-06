@@ -13,8 +13,6 @@ const openai = new OpenAI({
 async function main() {
   const { videoPath, key } = workerData;
 
-  console.log("Processing video", videoPath);
-
   const [fromTrans, fromOCR] = await Promise.all([
     transcribe(videoPath),
     performOCR(videoPath),
@@ -67,12 +65,9 @@ function extractAudio(videoPath, audioOutputPath) {
 
 async function performOCR(videoPath) {
   const vpath = path.resolve(__dirname, "../", videoPath);
-  // create the tmp/frames directory if it doesn't exist
   await fs.mkdir("/tmp/frames", { recursive: true });
 
   const outputDirectory = "/tmp/frames";
-
-  // Delete the files inside the output directory, dont delete the directory itself
   const files = await fs.readdir(outputDirectory);
   for (const file of files) {
     await fs.unlink(path.join(outputDirectory, file));
@@ -81,7 +76,7 @@ async function performOCR(videoPath) {
   // Convert Video to frames
   await new Promise((resolve, reject) => {
     ffmpeg(vpath)
-      .outputOptions("-vf fps=1") // This sets the frame extraction rate to 1 frame per second. Adjust as needed.
+      .outputOptions("-vf fps=1")
       .output(`${outputDirectory}/frame-%03d.jpg`) // Output file name pattern
       .on("end", () => {
         console.log("Frame extraction is done");
@@ -194,7 +189,6 @@ async function performOCR(videoPath) {
     OCRtext += `Location: ${ocrResults[i].location}s - ${ocrResults[i].text}\n`;
   }
 
-  // Terminate OCR workers
   ocrWorkers.forEach((worker) => worker.terminate());
 
   // Cleanup the results with GPT-4
