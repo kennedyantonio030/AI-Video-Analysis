@@ -24,7 +24,6 @@ async function main() {
 }
 
 async function transcribe(videoPath) {
-  // Extract audio from video
   await extractAudio(videoPath, "/tmp/audio.mp3");
   const transcription = await transcribeAudio("/tmp/audio.mp3");
 
@@ -73,7 +72,6 @@ async function performOCR(videoPath) {
     await fs.unlink(path.join(outputDirectory, file));
   }
 
-  // Convert Video to frames
   await new Promise((resolve, reject) => {
     ffmpeg(vpath)
       .outputOptions("-vf fps=1")
@@ -89,7 +87,6 @@ async function performOCR(videoPath) {
       .run();
   });
 
-  // Calculate the SSIM for each pair of frames
   const directoryPath = "/tmp/frames";
   let fileNames = await fs.readdir(directoryPath);
 
@@ -107,7 +104,6 @@ async function performOCR(videoPath) {
     () => new Worker("./workers/ssim_worker.js")
   );
 
-  // Distribute the SSIM work
   const segmentSize = Math.ceil(pairs.length / workers.length);
   const resultsPromises = workers.map((worker, index) => {
     const start = index * segmentSize;
@@ -126,7 +122,6 @@ async function performOCR(videoPath) {
   const indexes = determineStableFrames(SIMMresults.flat());
   const stableFramesPaths = getPaths(indexes, directoryPath);
 
-  // Terminate SSIM workers
   workers.forEach((worker) => worker.terminate());
 
   const cpuCount = cpus;
@@ -226,7 +221,6 @@ async function performOCR(videoPath) {
 
 main();
 
-// Function to determine stable frames based on SSIM results
 function determineStableFrames(ssimResults) {
   let indices = [];
   let pushed = false;
@@ -245,7 +239,6 @@ function determineStableFrames(ssimResults) {
 
 function getPaths(indices, framesDir) {
   return indices.map((index) => {
-    // Frame filenames are 1-indexed and follow the pattern 'frame-XXX.jpg'
     const frameNumber = (index + 1).toString().padStart(3, "0");
     const filename = `frame-${frameNumber}.jpg`;
     const filePath = path.join(framesDir, filename);
